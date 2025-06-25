@@ -1,0 +1,36 @@
+Name:		qubes-core-admin-addon-kicksecure
+Version:	@VERSION@
+Release:	1%{?dist}
+Summary:	qubes-core-admin extension for handling Kicksecure related settings
+
+Group:		Qubes
+License:	GPLv2+
+URL:		https://www.qubes-os.org
+Source0:    %{name}-%{version}.tar.gz
+
+BuildArch:	noarch
+BuildRequires:	python3-devel
+BuildRequires:	python3-setuptools
+BuildRequires:	make
+Requires:	qubes-core-admin-addon-whonix
+
+%description
+qubes-core-admin extension for handling Kicksecure related settings
+
+%prep
+%setup -q
+
+%build
+make %{?_smp_mflags}
+
+
+%install
+%make_install
+
+
+%files
+%doc README.md
+%{python3_sitelib}/qubeskicksecure-*.egg-info
+%{python3_sitelib}/qubeskicksecure
+
+%changelog
