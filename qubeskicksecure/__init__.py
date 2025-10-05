@@ -32,6 +32,7 @@ class QubesKicksecureExtension(qubes.ext.Extension):
         """Handle new AppVM created on kicksecure template and adjust its
         default settings
         """
+        # pylint: disable=unused-argument
         template = getattr(vm, "template", None)
         if template is None:
             return
