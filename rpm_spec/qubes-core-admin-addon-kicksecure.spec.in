@@ -34,3 +34,4 @@ make %{?_smp_mflags}
 %{python3_sitelib}/qubeskicksecure
 
 %changelog
+@CHANGELOG@
