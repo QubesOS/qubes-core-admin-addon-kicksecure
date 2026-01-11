@@ -53,6 +53,6 @@ class QubesKicksecureExtension(qubes.ext.Extension):
     @qubes.ext.handler("domain-load")
     def on_domain_load(self, vm, _event):
         """Retroactively add tags to kicksecure."""
-        if hasattr(vm, "template") and "kicksecure" in vm.template.features:
+        if vm.features.check_with_template("kicksecure", None):
             if "sdwdate-gui-client" not in vm.tags:
                 vm.tags.add("sdwdate-gui-client")
