@@ -27,18 +27,28 @@ import qubes.vm.templatevm
 class QubesKicksecureExtension(qubes.ext.Extension):
     """qubes-core-admin extension for handling Kicksecure related settings"""
 
+    def apply_tags(self, vm):
+        """Apply the appropriate tags to Kicksecure VMs."""
+        if not isinstance(vm, qubes.vm.LocalVM):
+            return
+
+        if vm.features.check_with_template(
+            "whonix-gw", None
+        ) or vm.features.check_with_template("whonix-ws", None):
+            return
+
+        if vm.features.check_with_template("kicksecure", None):
+            vm.tags.add("sdwdate-gui-client")
+        else:
+            vm.tags.discard("sdwdate-gui-client")
+
     @qubes.ext.handler("domain-add", system=True)
     def on_domain_add(self, app, _event, vm, **_kwargs):
         """Handle new AppVM created on kicksecure template and adjust its
         default settings
         """
         # pylint: disable=unused-argument
-        template = getattr(vm, "template", None)
-        if template is None:
-            return
-
-        if "kicksecure" in template.features:
-            vm.tags.add("sdwdate-gui-client")
+        self.apply_tags(vm)
 
     @qubes.ext.handler("features-request")
     def on_features_request(self, vm, _event, untrusted_features):
@@ -53,6 +63,12 @@ class QubesKicksecureExtension(qubes.ext.Extension):
     @qubes.ext.handler("domain-load")
     def on_domain_load(self, vm, _event):
         """Retroactively add tags to kicksecure."""
-        if vm.features.check_with_template("kicksecure", None):
-            if "sdwdate-gui-client" not in vm.tags:
-                vm.tags.add("sdwdate-gui-client")
+        self.apply_tags(vm)
+
+    @qubes.ext.handler("property-set:template")
+    def on_property_set_template(
+        self, vm, event, name, newvalue, oldvalue=None
+    ):
+        # pylint: disable=too-many-positional-arguments, unused-argument
+        """Add tags to AppVMs that become based upon Kicksecure."""
+        self.apply_tags(vm)
